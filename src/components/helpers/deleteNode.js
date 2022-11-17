@@ -6,7 +6,7 @@ export const deleteNode = (array, id) => {
             break;
         }
         // обрабатывает случай когда obj не имеет удаляемого id, но имеет потомков, у которых он может быть
-        if (array[i].children !== undefined) {
+        if (array[i].children) {
             deleteNode(array[i].children, id);
         }
     }

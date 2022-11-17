@@ -6,7 +6,7 @@ export const editNode = (array, id, value) => {
             break;
         }
         // обрабатывает случай когда obj не имеет родительского id, но имеет потомков
-        if (array[i].children !== undefined) {
+        if (array[i].children) {
             editNode(array[i].children, id, value);
         }
     }

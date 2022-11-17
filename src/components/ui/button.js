@@ -14,7 +14,6 @@ const ButtonComponent = styled.button`
   padding: 10px 15px;
   border-radius: 15px;
   border: none;
-  outline: none;
   cursor: ${props => props.disabled ? "default" : "pointer"};
   visibility: hidden;
   font-family: "Roboto", sans-serif;
