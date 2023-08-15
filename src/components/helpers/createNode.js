@@ -7,11 +7,10 @@ export const createNode = (array, id, value) => {
                 array[i].children = [
                     ...array[i].children,
                     {id: Date.now(), text: value}];
-                break;
             } else { // создает новый массив потомков
                 array[i].children = [{id: Date.now(), text: value}];
-                break;
             }
+            return array;
         }
         // обрабатывает случай когда obj не имеет родительского id, но имеет потомков
         if (array[i].children) {

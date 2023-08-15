@@ -1,47 +1,46 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {createPortal} from "react-dom";
 import Modal from "../helpers/modal";
 import {ContainerModal, Text} from "../ui/constants";
 import Input from "../ui/input";
 import Button from "../ui/button";
+import styled from "styled-components";
 
-const EditModal = ({show, setShow, id, editNode}) => {
-
-    const [isBrowser, setBrowser] = useState(false)
+const EditModal = ({setShowModal, node, editNode}) => {
+    const [isBrowserLoaded, setIsBrowserLoaded] = useState(false)
 
     useEffect(() => {
-        setBrowser(true);
+        setIsBrowserLoaded(true);
     }, []);
 
-    const CancelPropagation = (event) => {
-        event.stopPropagation()
-    }
+    const [inputValue, setInputValue] = useState(node.text)
 
-    const [value, setValue] = useState("")
+    const onEditClick = useCallback(() => {
+        editNode(node.id, inputValue)
+        setInputValue("")
+        setShowModal(false)
+    }, [editNode, setInputValue, setShowModal, inputValue])
 
-    const handleClick = () => {
-        editNode(id, value)
-        setValue("")
-        setShow(false)
-    }
+    const content = useMemo(() => (<Modal setShowModal={setShowModal}>
+        <ContainerModal onClick={e => e.stopPropagation()}>
+            <Text style={{marginBottom: 30}}>
+                Edit node
+            </Text>
+            <div>
+                <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
+            </div>
+            <EditButton disabled={inputValue === "" || inputValue === node.text} onClick={onEditClick} type={"create"}>
+                Edit
+            </EditButton>
+        </ContainerModal>
+    </Modal>), [inputValue, node.text, setShowModal, setInputValue, onEditClick])
 
-    const content = show ? (
-        <Modal setShow={setShow}>
-            <ContainerModal onClick={CancelPropagation}>
-                <Text style={{marginBottom: 30}}>
-                    Edit node
-                </Text>
-                <div>
-                    <Input value={value} onChange={(e) => setValue(e.target.value)}/>
-                </div>
-                <Button disabled={value === ""} style={{visibility: "visible", marginTop: 20}} onClick={handleClick} type={"create"}>
-                    Edit
-                </Button>
-            </ContainerModal>
-        </Modal>
-    ) : null
-
-    return isBrowser ? createPortal(content,  document.getElementById('modal-root')) : null
+    return isBrowserLoaded ? createPortal(content, document.getElementById('modal-root')) : null
 };
+
+const EditButton = styled(Button)`
+  visibility: visible;
+  margin-top: 20px;
+`;
 
 export default EditModal;

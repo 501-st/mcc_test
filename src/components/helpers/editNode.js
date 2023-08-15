@@ -3,7 +3,7 @@ export const editNode = (array, id, value) => {
         // обрабатывает случай когда obj с родительским id находится на первом уровне
         if (array[i].id === id) {
             array[i].text = value
-            break;
+            return array;
         }
         // обрабатывает случай когда obj не имеет родительского id, но имеет потомков
         if (array[i].children) {

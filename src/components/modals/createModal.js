@@ -1,47 +1,47 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {createPortal} from "react-dom";
 import Modal from "../helpers/modal";
 import {ContainerModal, Text} from "../ui/constants";
 import Input from "../ui/input";
 import Button from "../ui/button";
+import styled from "styled-components";
 
-const CreateModal = ({show, setShow, createNode, id}) => {
+const CreateModal = ({setShowModal, createNode, node}) => {
 
-    const [isBrowser, setBrowser] = useState(false)
+    const [isBrowserLoaded, setIsBrowserLoaded] = useState(false)
 
     useEffect(() => {
-        setBrowser(true);
+        setIsBrowserLoaded(true);
     }, []);
 
-    const CancelPropagation = (event) => {
-        event.stopPropagation()
-    }
+    const [inputValue, setInputValue] = useState('')
 
-    const [value, setValue] = useState("")
+    const onClickCreate = useCallback(() => {
+        createNode(node.id, inputValue)
+        setInputValue("")
+        setShowModal(false)
+    }, [createNode, setInputValue, setShowModal, inputValue])
 
-    const handleClick = () => {
-        createNode(id, value)
-        setValue("")
-        setShow(false)
-    }
+    const content = useMemo(() => ( <Modal setShowModal={setShowModal}>
+        <ContainerModal onClick={e => e.stopPropagation()}>
+            <Text style={{marginBottom: 30}}>
+                Create node
+            </Text>
+            <div>
+                <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
+            </div>
+            <CreateButton disabled={inputValue === ""} onClick={onClickCreate} type={"create"}>
+                Create
+            </CreateButton>
+        </ContainerModal>
+    </Modal>), [setShowModal, inputValue, setInputValue, onClickCreate])
 
-    const content = show ? (
-        <Modal setShow={setShow}>
-            <ContainerModal onClick={CancelPropagation}>
-                <Text style={{marginBottom: 30}}>
-                    Create node
-                </Text>
-                <div>
-                    <Input value={value} onChange={(e) => setValue(e.target.value)}/>
-                </div>
-                <Button disabled={value === ""} style={{visibility: "visible", marginTop: 20}} onClick={handleClick} type={"create"}>
-                    Create
-                </Button>
-            </ContainerModal>
-        </Modal>
-    ) : null
-
-    return isBrowser ? createPortal(content,  document.getElementById('modal-root')) : null
+    return isBrowserLoaded ? createPortal(content,  document.getElementById('modal-root')) : null
 };
+
+const CreateButton = styled(Button)`
+  visibility: visible;
+  margin-top: 20px
+`;
 
 export default CreateModal;

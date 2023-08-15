@@ -13,9 +13,9 @@ const Container = styled.div`
   top: 0;
 `;
 
-let Modal = ({children, setShow}) => {
+const Modal = ({children, setShowModal}) => {
     return (
-        <Container onClick={() => setShow(false)}>
+        <Container onClick={() => setShowModal(false)}>
             {children}
         </Container>
     )

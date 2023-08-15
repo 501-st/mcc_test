@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import styled from "styled-components";
 import Button from "./components/ui/button";
 import List from "./components/list";
@@ -6,76 +6,76 @@ import {deleteNode} from "./components/helpers/deleteNode";
 import {createNode} from "./components/helpers/createNode";
 import {editNode} from "./components/helpers/editNode";
 
+const initialState = [
+    {
+        id: 1,
+        text: "node1",
+    },
+    {
+        id: 2,
+        text: "node2",
+        children: [
+            {
+                id: 5,
+                text: "node5"
+            }
+        ]
+    },
+    {
+        id: 3,
+        text: "node3",
+        children: [
+            {
+                id: 6,
+                text: "node6",
+                children: [
+                    {
+                        id: 7,
+                        text: "node7"
+                    },
+                    {
+                        id: 8,
+                        text: "node8"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        id: 4,
+        text: "node4"
+    }
+]
+
 const App = () => {
+    const [nodes, setNodes] = useState(() => JSON.parse(JSON.stringify(initialState)))
 
-    let initialState = [
-        {
-            id: 1,
-            text: "node1"
-        },
-        {
-            id: 2,
-            text: "node2",
-            children: [
-                {
-                    id: 5,
-                    text: "node5"
-                }
-            ]
-        },
-        {
-            id: 3,
-            text: "node3",
-            children: [
-                {
-                    id: 6,
-                    text: "node6",
-                    children: [
-                        {
-                            id: 7,
-                            text: "node7"
-                        },
-                        {
-                            id: 8,
-                            text: "node8"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            id: 4,
-            text: "node4"
-        }
-    ]
-
-    const [nodes, setNodes] = useState(initialState)
-
-    const handleClickDelete = (id) => {
+    const onClickDelete = useCallback((id) => {
         setNodes(deleteNode([...nodes], id))
-    }
+    }, [nodes, setNodes])
 
-    const handleClickCreate = (id, value) => {
+    const onClickCreate = useCallback((id, value) => {
         setNodes(createNode([...nodes], id, value))
-    }
+    }, [nodes, setNodes])
 
-    const handleClickEdit = (id, value) => {
+    const onClickEdit = useCallback((id, value) => {
         setNodes(editNode([...nodes], id, value))
-    }
+    }, [nodes, setNodes])
 
-    const handleClickReset = () => {
-        setNodes(initialState)
-    }
+    const onResetClick = useCallback(() => {
+        setNodes(JSON.parse(JSON.stringify(initialState)))
+    }, [setNodes, initialState])
 
     return (
         <Wrapper>
             <Container>
-                <div style={{textAlign: "center", marginBottom: 50}}>
-                    <Button style={{visibility: "visible", backgroundColor: "#d2b6b6"}} onClick={handleClickReset}>
+                <ButtonContainer>
+                    <ResetButton onClick={onResetClick}>
                         Reset
-                    </Button>
-                </div>
-                <List nodes={nodes} removeNode={handleClickDelete} createNode={handleClickCreate} editNode={handleClickEdit}/>
+                    </ResetButton>
+                </ButtonContainer>
+                <List nodes={nodes} removeNode={onClickDelete} createNode={onClickCreate}
+                      editNode={onClickEdit}/>
             </Container>
         </Wrapper>
     );
@@ -93,6 +93,16 @@ const Container = styled.div`
   background-color: #8a96da;
   border-radius: 20px;
   padding: 20px 20px 20px 0;
+`;
+
+const ResetButton = styled(Button)`
+  visibility: visible;
+  background-color: #d2b6b6;
+`;
+
+const ButtonContainer = styled.div`
+  text-align: center;
+  margin-bottom: 50px;
 `;
 
 export default App;
